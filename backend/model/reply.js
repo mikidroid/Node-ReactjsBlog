@@ -17,7 +17,8 @@ const replySchema = new Schema({
       user:{
         type: Schema.Types.ObjectId,
         ref:'user'
-      }
+      },
+      reaction:{ type : Array  },
       
 })
 

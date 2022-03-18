@@ -21,10 +21,10 @@ exports.index = (app)=>{
  //Add comment
   app.post('/comment/add',store.single('image'),async (req,res)=>{
    
-   
    let form = {
        name:req.body.name,
        content:req.body.content,
+       reaction:[],
        email:req.body.email,
        createdAt:new Date().toString(),
        //author:req.body.userId,
@@ -41,6 +41,50 @@ exports.index = (app)=>{
      console.log(_post)
      res.send({status:200})
    } 
+  })
+  
+  //Add comment reaction
+  app.post('/comment/reaction',store.single('image'),async(req,res)=>{
+   
+    let reaction = {
+        type:req.body.type,
+        username:req.body.username
+    }
+    
+     _comment = await comment.findOne({_id:req.body.commentId})
+     // check if user clicked this same reaction b4
+     //if so, do nothing and return success
+     if(_comment.reaction.some(reac=>reac.username==reaction.username)){
+       res.send({status:200})
+       console.log(reaction)
+     }
+     else{
+     //else push reaction
+     _comment.reaction.push(reaction)
+     _comment.save()
+     res.send({status:200})
+     }
+  })
+  
+  //remove  reaction
+  app.post('/comment/reaction/unlike',store.single('image'),async(req,res)=>{
+   
+    let reaction = {
+        type:req.body.type,
+        username:req.body.username
+    }
+     _comment = await comment.findOne({_id:req.body.commentId})
+     // check if user clicked this same reaction b4
+     //if so, do nothing and return success
+       if(!_comment.reaction.some(reac=>reac.username==reaction.username)){
+       res.send({status:200})
+     }
+     else{
+     //else push reaction
+     _comment.reaction.pull(reaction)
+     _comment.save()
+     res.send({status:200})
+     }
   })
 
 }

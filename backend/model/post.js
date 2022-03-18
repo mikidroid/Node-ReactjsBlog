@@ -16,7 +16,8 @@
         category:String,
         createdAt:String,
         image_url:String,
-        published:Boolean
+        published:Boolean,
+        reaction:{ type : Array },
         
       }))
  module.exports = post

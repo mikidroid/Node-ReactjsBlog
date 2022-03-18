@@ -51,9 +51,43 @@ exports.index = (app)=>{
         //save post after population and edit
         post.save()
         res.send({data:post})
-        
     })
-        
-    
-  });
+  })
+  
+  //Add post reaction
+  app.post('/post/reaction',store.single('image'),async(req,res)=>{
+   
+    let reaction = {
+        type:req.body.type,
+        username:req.body.username
+    }
+     _post = post.findOne({_id:req.body.postId})
+     // check if user clicked this same reaction b4
+     //if so, do nothing and return success
+     if(_post.reaction.includes(reaction)){
+       res.send({status:200})
+     }
+     //else push reaction
+     _post = post.reaction.push(reaction)
+     _post.save()
+  })
+  
+  
+   //remove post reaction
+  app.delete('/post/reaction',store.single('image'),async(req,res)=>{
+   
+    let reaction = {
+        type:req.body.type,
+        username:req.body.username
+    }
+     _post = post.findOne({_id:req.body.postId})
+     // check if user clicked this same reaction b4
+     //if so, do nothing and return success
+     if(!_post.reaction.includes(reaction)){
+       res.send({status:200})
+     }
+     //else push reaction
+     _post = post.reaction.pull(reaction)
+     _post.save()
+  })
 }
