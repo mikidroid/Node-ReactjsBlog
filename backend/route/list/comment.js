@@ -15,7 +15,7 @@ exports.index = (app)=>{
   app.get('/comment/:id',store.single('image'),async (req,res)=>{
    const _comment = await comment.find({post:req.params.id}).sort({'createdAt':-1}).populate("post")
     res.send({data:_comment})
-    console.log(_comment)
+    
   })
 
  //Add comment
@@ -55,7 +55,7 @@ exports.index = (app)=>{
      // check if user clicked this same reaction b4
      //if so, do nothing and return success
      if(_comment.reaction.some(reac=>reac.username==reaction.username)){
-       res.send({status:200})
+       res.send({status:401})
        console.log(reaction)
      }
      else{
@@ -77,7 +77,7 @@ exports.index = (app)=>{
      // check if user clicked this same reaction b4
      //if so, do nothing and return success
        if(!_comment.reaction.some(reac=>reac.username==reaction.username)){
-       res.send({status:200})
+       res.send({status:401})
      }
      else{
      //else push reaction

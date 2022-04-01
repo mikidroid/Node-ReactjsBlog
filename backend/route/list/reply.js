@@ -55,8 +55,8 @@ exports.index = (app)=>{
      // check if user clicked this same reaction b4
      //if so, do nothing and return success
      if(_reply.reaction.some(reac=>reac.username==reaction.username)){
-       res.send({status:200})
-       console.log(reaction)
+       res.send({status:401})
+       //console.log(reaction)
      }
      else{
      //else push reaction
@@ -77,7 +77,7 @@ exports.index = (app)=>{
      // check if user clicked this same reaction b4
      //if so, do nothing and return success
        if(!_reply.reaction.some(reac=>reac.username==reaction.username)){
-       res.send({status:200})
+       res.send({status:401})
      }
      else{
      //else push reaction

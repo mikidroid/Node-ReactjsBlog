@@ -17,7 +17,6 @@
         createdAt:String,
         image_url:String,
         published:Boolean,
-        reaction:{ type : Array },
-        
+        rating:{ type : Array },
       }))
  module.exports = post

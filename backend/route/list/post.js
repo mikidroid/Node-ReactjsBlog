@@ -10,13 +10,16 @@ const store = require(_root+'/backend/config/file-upload').single('posts')
 
 
 
-exports.index = (app)=>{
+exports.index = (app,io)=>{
 
  //All routes
   app.get('/post',async (req,res)=>{
-   const _post = await post.find().sort({'createdAt':-1})
+   const _post = await post.find().sort({'createdAt':1})
+    io.on("connection",(socket)=>{
+     io.emit("post",'posts refreshed')
+    })
     res.send({data:_post})
-    console.log(_post)
+    
   })
 
  //Add post
@@ -27,6 +30,7 @@ exports.index = (app)=>{
        title:req.body.title,
        image_url:req.file.filename,
        content:req.body.content,
+       rating:[],
        author:req.body.userId,
        category:req.body.category,
        createdAt:new Date().toString(),
@@ -51,43 +55,36 @@ exports.index = (app)=>{
         //save post after population and edit
         post.save()
         res.send({data:post})
+        
+        //socket emit
+        io.on("connection",(socket)=>{
+           socket.emit("fetched")
+        })
     })
   })
   
-  //Add post reaction
-  app.post('/post/reaction',store.single('image'),async(req,res)=>{
+  
+   //Add rating
+   app.post('/post/rating',store.single('image'),async(req,res)=>{
    
-    let reaction = {
-        type:req.body.type,
+    let rating = {
+        value:req.body.value,
         username:req.body.username
     }
-     _post = post.findOne({_id:req.body.postId})
-     // check if user clicked this same reaction b4
+    
+     _post = await post.findOne({_id:req.body.postId})
+     // check if user rated b4
      //if so, do nothing and return success
-     if(_post.reaction.includes(reaction)){
-       res.send({status:200})
+     if(_post.rating.some(rate=>rate.username==rating.username)){
+       res.send({status:401})
+       //console.log(rating)
      }
-     //else push reaction
-     _post = post.reaction.push(reaction)
+     else{
+     //else push rating
+     _post.rating.push(rating)
      _post.save()
+     res.send({status:200})
+     }
   })
   
-  
-   //remove post reaction
-  app.delete('/post/reaction',store.single('image'),async(req,res)=>{
-   
-    let reaction = {
-        type:req.body.type,
-        username:req.body.username
-    }
-     _post = post.findOne({_id:req.body.postId})
-     // check if user clicked this same reaction b4
-     //if so, do nothing and return success
-     if(!_post.reaction.includes(reaction)){
-       res.send({status:200})
-     }
-     //else push reaction
-     _post = post.reaction.pull(reaction)
-     _post.save()
-  })
 }

@@ -1,3 +1,4 @@
+
 const express = require('express')
 const app = express()
 const path = require('path')
@@ -6,6 +7,34 @@ const dotenv = require('dotenv').config()
 global._root= __dirname;
 const route = require('./backend/route/index')
 //const bp = require('body-parser')
+const { Server } = require("socket.io")
+const cors = require('cors');
+//http server
+const HttpServ = require("http")
+const serve = HttpServ.createServer(app)
+
+//helps socket request
+
+app.use(cors())
+
+//using sockets
+const io = new Server(serve,{
+  cors:{
+    origin:"http://localhost:3000",
+    methods:["GET","POST"]
+  }
+})
+
+io.on("connection",(socket)=>{
+  socket.on("display",(socket)=>{
+  console.log(socket)
+  })
+  io.on("addComment",(soc,callback)=>{
+    console.log(soc)
+    callback("Done")
+  })
+})
+
 
 // Used to parse JSON bodies
 app.use(express.json());
@@ -16,8 +45,8 @@ backend/files becomes the root of the node server files*/
 var dir = path.join(__dirname, 'backend/files');
 app.use(express.static(dir));
 
-//App listener
-app.listen(port,(req,res)=>{
+//App listener using the httpServer created with express's app instance
+serve.listen(port,(req,res)=>{
   console.log("App running on port: "+process.env.PORT)
 })
 
@@ -31,6 +60,6 @@ app.use(function(req, res, next) {
 });
 
 //All my Apis
-route.index(app)
+route.index(app,io)
 
 
