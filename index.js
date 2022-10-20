@@ -5,36 +5,28 @@ const path = require('path')
 const port = 3500
 const dotenv = require('dotenv').config()
 global._root= __dirname;
+global._base= __dirname+'/backend';
 const route = require('./backend/route/index')
-//const bp = require('body-parser')
 const { Server } = require("socket.io")
 const cors = require('cors');
-//http server
-const HttpServ = require("http")
-const serve = HttpServ.createServer(app)
 
-//helps socket request
+//http server...  these will help socket
+const Http = require("http")
+const serve = Http.createServer(app)
+//https server
+const Https = require("https")
+const serveHttps = Https.createServer(app)
 
-app.use(cors())
-
-//using sockets
-const io = new Server(serve,{
+//When http(serve) isnt available, use https (serveHttps)
+const io = new Server(serve || serveHttps,{
   cors:{
-    origin:"http://localhost:3000",
+    origin:process.env.FRONTEND_URL,
     methods:["GET","POST"]
   }
 })
 
-io.on("connection",(socket)=>{
-  socket.on("display",(socket)=>{
-  console.log(socket)
-  })
-  io.on("addComment",(soc,callback)=>{
-    console.log(soc)
-    callback("Done")
-  })
-})
-
+//helps socket request
+app.use(cors())
 
 // Used to parse JSON bodies
 app.use(express.json());
@@ -46,7 +38,7 @@ var dir = path.join(__dirname, 'backend/files');
 app.use(express.static(dir));
 
 //App listener using the httpServer created with express's app instance
-serve.listen(port,(req,res)=>{
+app.listen(port,(req,res)=>{
   console.log("App running on port: "+process.env.PORT)
 })
 
@@ -55,11 +47,10 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*"); 
    //update to match the domain you will make the request from
   res.header('Access-Control-Allow-Headers', 'x-www-form-urlencoded, Origin, X-Requested-With, Content-Type, Accept, Authorization, *');
-//  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
 
 //All my Apis
-route.index(app,io)
+route(app,io)
 
 

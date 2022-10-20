@@ -30,7 +30,7 @@ export default function App(props){
        replyId:val2}
        
     axios.post(config.SERVER+'/reply/reaction',data).then(r=>{
-        alert("comment liked!")
+        
     })
  }
  
@@ -42,7 +42,7 @@ export default function App(props){
        replyId:val2}
        
     axios.post(config.SERVER+'/reply/reaction/unlike',data).then(r=>{
-        alert("comment unliked!")
+        
     })
  }
  
@@ -53,7 +53,7 @@ export default function App(props){
   <>
 
   
-  <CU.Box ml={3}>
+  <CU.Box ml={1}>
   
   <CU.List >
   { 
@@ -62,7 +62,7 @@ export default function App(props){
   return (
   <>
    
-   <CU.Stack direction="row" p={1}>
+   <CU.Stack direction="row" mt={2} p={1}>
    
    <CU.Box  >
    <CU.Image h="30px" borderRadius="full" maxWidth="30px" w="30px" objectFit='cover' src="/avatar.png" />

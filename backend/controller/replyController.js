@@ -1,25 +1,18 @@
 let path = require('path')
 const dotenv = require('dotenv').config()
 //Model for replys
-const reply = require('../../model/reply')
-//Model for posts
-const post = require('../../model/post')
+const reply = require('../model/reply')
 //Model for comments
-const comment = require('../../model/comment')
-//without this multer store, req.body will be empty
-const store = require(_root+'/backend/config/file-upload').single('comments')
+const comment = require('../model/comment')
 
 
-exports.index = (app)=>{
-
- //All routes
-  app.get('/reply/:id',async (req,res)=>{
+ const View = async (req,res)=>{
    const _reply = await reply.find({comment:req.params.id}).sort({'createdAt':-1})
     res.send({data:_reply})
-  })
+  }
 
  //Add reply
-  app.post('/reply/add',store.single('image'),async (req,res)=>{
+ const Create = async (req,res)=>{
    let form = {
        name:req.body.name,
        content:req.body.content,
@@ -41,10 +34,10 @@ exports.index = (app)=>{
     
     res.send({status:200})
    }
-  })
+  }
   
    //Add reply reaction
-  app.post('/reply/reaction',store.single('image'),async(req,res)=>{
+ const Reaction = async(req,res)=>{
    
     let reaction = {
         type:req.body.type,
@@ -62,12 +55,13 @@ exports.index = (app)=>{
      //else push reaction
      _reply.reaction.push(reaction)
      _reply.save()
+     io.emit("reaction","Comment liked")
      res.send({status:200})
      }
-  })
+  }
   
   //remove  reaction
-  app.post('/reply/reaction/unlike',store.single('image'),async(req,res)=>{
+ const Unlike = async(req,res)=>{
    
     let reaction = {
         type:req.body.type,
@@ -83,9 +77,10 @@ exports.index = (app)=>{
      //else push reaction
      _reply.reaction.pull(reaction)
      _reply.save()
+     io.emit("reaction","Comment unliked")
      res.send({status:200})
      }
-  })
+  }
 
-  
-}
+
+module.exports = {Reaction,Unlike,Create,View}

@@ -1,25 +1,19 @@
 let path = require('path')
 const dotenv = require('dotenv').config()
 //Model for comments
-const comment = require('../../model/comment')
+const comment = require('../model/comment')
 //Model for posts
-const post = require('../../model/post')
-
-//without this multer store, req.body will be empty
-const store = require(_root+'/backend/config/file-upload').single('comments')
+const post = require('../model/post')
 
 
-exports.index = (app)=>{
-
- //All routes
-  app.get('/comment/:id',store.single('image'),async (req,res)=>{
+const View = async (req,res)=>{
    const _comment = await comment.find({post:req.params.id}).sort({'createdAt':-1}).populate("post")
     res.send({data:_comment})
     
-  })
+  }
 
  //Add comment
-  app.post('/comment/add',store.single('image'),async (req,res)=>{
+  const Create = async (req,res)=>{
    
    let form = {
        name:req.body.name,
@@ -38,13 +32,14 @@ exports.index = (app)=>{
     _post.comments.push(created._id)
     _post.save()
     
-     console.log(_post)
+    io.emit('commentAdded','New comment on '+_post.title)
+     //console.log(_post)
      res.send({status:200})
    } 
-  })
+  }
   
   //Add comment reaction
-  app.post('/comment/reaction',store.single('image'),async(req,res)=>{
+  const Reaction = async(req,res)=>{
    
     let reaction = {
         type:req.body.type,
@@ -62,12 +57,13 @@ exports.index = (app)=>{
      //else push reaction
      _comment.reaction.push(reaction)
      _comment.save()
+     io.emit("reaction","Comment liked")
      res.send({status:200})
      }
-  })
+  }
   
   //remove  reaction
-  app.post('/comment/reaction/unlike',store.single('image'),async(req,res)=>{
+  const Unlike = async(req,res)=>{
    
     let reaction = {
         type:req.body.type,
@@ -83,8 +79,9 @@ exports.index = (app)=>{
      //else push reaction
      _comment.reaction.pull(reaction)
      _comment.save()
+     io.emit("reaction","Comment unliked")
      res.send({status:200})
      }
-  })
+  }
 
-}
+module.exports = {Create,Reaction,Unlike,View}

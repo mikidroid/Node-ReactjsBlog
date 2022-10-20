@@ -1,7 +1,7 @@
 const multer = require('multer')
 const mainPath = require('path')
 
-exports.single = (path) => {
+const upload = (path) => {
  
    const disk = multer.diskStorage({
        destination:_root+'/backend/files/'+path,
@@ -15,3 +15,5 @@ exports.single = (path) => {
    return multer({storage:disk})
   
 }
+
+module.exports = upload

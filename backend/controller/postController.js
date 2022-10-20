@@ -1,30 +1,21 @@
 let path = require('path')
 const dotenv = require('dotenv').config()
 //Model for posts
-const post = require('../../model/post')
+const post = require('../model/post')
  //require('../../model/comment')
 
 //Upload
 //without this multer store upload, req.body will be empty
-const store = require(_root+'/backend/config/file-upload').single('posts')
 
-
-
-exports.index = (app,io)=>{
 
  //All routes
-  app.get('/post',async (req,res)=>{
+  const Index = async(req,res)=>{
    const _post = await post.find().sort({'createdAt':1})
-    io.on("connection",(socket)=>{
-     io.emit("post",'posts refreshed')
-    })
     res.send({data:_post})
-    
-  })
+  }
 
  //Add post
-  app.post('/post/add',store.single('image'),async(req,res)=>{
-    
+  const Create = async(req,res)=>{
    //form data gotten from client
    let form = {
        title:req.body.title,
@@ -42,10 +33,10 @@ exports.index = (app,io)=>{
    if (created){
     res.send({status:200})
    }
-  })
+  }
 
  //View post
-  app.get('/post/view/:id',async (req,res)=>{
+  const View = async (req,res)=>{
     //find and populate just like JOIN in sql
     post.findOne({_id:req.params.id})
     .populate({path: 'comments',
@@ -55,23 +46,16 @@ exports.index = (app,io)=>{
         //save post after population and edit
         post.save()
         res.send({data:post})
-        
-        //socket emit
-        io.on("connection",(socket)=>{
-           socket.emit("fetched")
-        })
     })
-  })
+  }
   
   
    //Add rating
-   app.post('/post/rating',store.single('image'),async(req,res)=>{
-   
+   const Rating = async(req,res)=>{
     let rating = {
         value:req.body.value,
         username:req.body.username
     }
-    
      _post = await post.findOne({_id:req.body.postId})
      // check if user rated b4
      //if so, do nothing and return success
@@ -85,6 +69,7 @@ exports.index = (app,io)=>{
      _post.save()
      res.send({status:200})
      }
-  })
+  }
   
-}
+
+module.exports = {Index,Create,View,Rating}

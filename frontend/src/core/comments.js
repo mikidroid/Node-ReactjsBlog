@@ -8,6 +8,7 @@ import React from 'react'
 import Replies from './replies'
 import CreateReply from './reply-modal'
 import moment from 'moment';
+import io from "socket.io-client"
 const config = require('../config/config')
 const socket = io.connect(config.SERVER)
 
@@ -31,22 +32,17 @@ export default function App(props){
  },[])
  
  const addComment =()=>{
-  
+     //Notification.requestPermission()
+     //const not = new Notification("New comment")
      let formData = new FormData();
-     
      formData.append('name',name)
      formData.append('email',email)
      formData.append('postId',postId)
      formData.append('content',content)
-     
-     //socket fuction
-     socket.emit("addComment",formData,(soc)=>{
-      
-     })
     
-    /* Api fuction
-     axios.post(config.SERVER+'/comment/add',formData).then((r)=>alert("Comment added!"))
-     */
+    // Api fuction
+     axios.post(config.SERVER+'/comment/add',formData).then((r)=> window.location="/")
+     
  }
 
  const like =(val,val2)=>{
@@ -56,19 +52,18 @@ export default function App(props){
        commentId:val2}
        
     axios.post(config.SERVER+'/comment/reaction',data).then(r=>{
-        alert("comment liked!")
+        //alert("comment liked!")
     })
  }
  
  const unLike =(val,val2)=>{
-  
-   let data = {
+    let data = {
        username:auth.username,
        type:val,
        commentId:val2}
        
     axios.post(config.SERVER+'/comment/reaction/unlike',data).then(r=>{
-        alert("comment unliked!")
+        //alert("comment unliked!")
     })
  }
  
@@ -120,7 +115,7 @@ export default function App(props){
   return (
   <>
    
-   <CU.Stack direction="row" p={1}>
+   <CU.Stack direction="row" mt={3} p={1}>
    
    <CU.Box  >
    <CU.Image h="30px" maxWidth="30px" w="30px" objectFit='cover' borderRadius="full" src="/avatar.png" />

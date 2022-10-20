@@ -8,7 +8,9 @@ import Alert from '../core/alert'
 import Comments from '../core/comments'
 import moment from 'moment';
 import Rating from 'react-rating'
+import io from "socket.io-client"
 const config = require('../config/config')
+const socket = io.connect(config.SERVER)
 
 export default function App(){
  const auth=false
@@ -26,21 +28,28 @@ export default function App(){
  }
  
  React.useEffect(async()=>{
+   //get realtime data for reaction
+   socket.on("reaction",(soc)=>{
+     fetch(config.SERVER+'/post/view/'+id).then(r=>r.json()).then(r=>{
+     setData(r.data)
+     setContent(conv(r.data.content))
+     })
+   })
+  //get single post data
   getData()
    
  },[])
  
  const getData = () =>{
-   fetch('http://localhost:3500/post/view/'+id).then(r=>r.json()).then(r=>{
+   fetch(config.SERVER+'/post/view/'+id).then(r=>r.json()).then(r=>{
      setData(r.data)
      setContent(conv(r.data.content))
      setLoading(false)
    })
  }
  
+ //calculate rating function
  const calRating= () =>{
-    
-  
     if(data.rating.length > 0)
     {
     const _calRating = data.rating.map(val=>val.value).reduce((a,b)=>a+b,0)
@@ -58,16 +67,13 @@ export default function App(){
  }
  
  const onRate = (val) => {
-    
     let da = {
       username:"mikey",
       value:val,
       postId:data._id
     }
-   
     axios.post(config.SERVER+'/post/rating',da)
     .then(r=>{
-     
       if(r.data.status==200){
         alert("Ratings changed!")
         window.location.reload()
@@ -80,111 +86,21 @@ export default function App(){
 
  return(
   <>
-  <CU.Box 
-  bgGradient='linear(to-l, #7928CA,#FF0080)'
-  >
-  <CU.Stack direction='row'>
-  <Nav />
-  </CU.Stack>
-
-  <CU.Text
-    px={3}
-    color="#fff"
-    fontSize='4xl'
-    fontWeight='normal'
-    lineHeight={1}
-    pb={5}
-  >
-  {data.title}
-  </CU.Text>
-  
-  </CU.Box>
-
-   {
-    loading ?
-   <CU.Box textAlign="center">
-   <CU.CircularProgress isIndeterminate color='green.300' /></CU.Box>
-  
-  :
-  
-  <CU.Container>
-  
-  <CU.Stack mb={7} p={1} direction="column">
-  
-  <CU.Text >{moment(data.createdAt).format("dddd, MMMM Do YYYY, h:mm:ss a")}
-  </CU.Text>
-  
-  <CU.HStack>
-  { checkRating()
-    ?
-  <CU.Box mb={2} fontWeight="bold" >
-   Rating: {calRating()}
-  </CU.Box>
-   :
-    <CU.Box mb={2} fontWeight="bold" >
-   Rate post:
-  </CU.Box>
-  }
-  
-  <Rating 
-    fullSymbol={<CI.StarIcon mb={3} 
-    color="#bcbc00" />} 
-    emptySymbol={<CI.StarIcon mb={3} 
-    color="#ddd"/>} 
-    fractions={2} 
-    onChange={onRate}
-    initialRating={calRating()} 
-    readonly={checkRating()} />
-    
-  </CU.HStack>
-  
-  <CU.HStack>
-  <CU.Badge
-    px={2}
-    py={1}
-    variant="solid"
-    borderRadius={50}
-    bgColor="#343434"
-    color="#fff"
-    >
-    {data.category}
-  </CU.Badge>
-  
-   {data.views > 20 && 
-   <CU.Badge mr={2} variant="outline" colorScheme="red">
-    Hot
-  </CU.Badge>
-   }
-  
-  <CU.Text
-    
-    >
-    Views ({data.views})
-    
-  </CU.Text>
-  </CU.HStack>
-  
- <CU.Image objectFit='cover' src={config.SERVER+'/posts/'+data.image_url} />
- 
- 
-  
-  <CU.Box color="#676767" p={2} dangerouslySetInnerHTML={{__html:content}}
-    >
-    
-
-  </CU.Box>
- 
- 
- {!loading &&
-
-  <Comments comments={data.comments} postId={data._id} />
-
-  }
- 
-     
-  </CU.Stack>
-  </CU.Container>
-   }
+  {loading?
+  (
+    <div>
+    loading..
+    </div>
+  ):
+  (
+  <>
+   <div class="md:container bg-center bg-cover md:mx-auto h-40" style={{backgroundImage:`url(${config.SERVER}/posts/${data.image_url})`}}>
+   <h3 class="text-center text-white text-3xl font-bold pt-10 shadow-lg">
+     {data.title} 
+   </h3>
+   </div>
+  </>
+  )}
   </>
 )
 }

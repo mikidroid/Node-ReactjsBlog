@@ -1,33 +1,35 @@
-const mongoose = require('mongoose')
+const mongoose = require('../config/db')
 const {Schema} = mongoose
-const userSchema = new Schema({
-      username:String,
-      email:String,
-      password:String,
-      firstname:String,
-      lastname:String,
-      phone:Number,
-      level:Number,
-      badge:String,
-      posts:[{
-        type: Schema.Types.ObjectId,
-        ref:'post'
-      }],
-      comments:[{
-        type: Schema.Types.ObjectId,
-        ref:'comment'
-      }],
-      replies:[{
-        type: Schema.Types.ObjectId,
-        ref:'reply'
-      }],
-      orders:[{
-        type: Schema.Types.ObjectId,
-        ref:'order'
-      }],
-      
-})
 
-const user = mongoose.model('user',userSchema)
+const user = mongoose.model('user',new Schema({
+   username: {
+     type:String,
+     unique:[true,'Username already exists!'],
+     trim:true,
+     lowercase:true,
+   },
+   password: String,
+   email: {
+     type:String,
+     required:[true,'Email is required!'],
+     unique:[true,'Email already exist!'],
+     lowercase:true,
+     trim:true,
+   },
+   isAdmin: Boolean,
+   level: Number,
+   posts: [{
+     type: Schema.Types.ObjectId,
+     ref: 'post'
+   }],
+   orders: [{
+     type: Schema.Types.ObjectId,
+     ref: 'order'
+   }],
+   created:{
+     type:Date,
+     default:Date.now,
+   }
+}))
 
 module.exports = user

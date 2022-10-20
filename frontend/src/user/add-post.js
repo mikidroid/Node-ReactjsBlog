@@ -35,15 +35,12 @@ const [title, setTitle] = React.useState('')
   }
   
   const submit = () => {
-     
      let formData = new FormData();
-     
      formData.append('image',image)
      formData.append('content',convertDraft())
      formData.append('title',title)
      formData.append('category',category)
-     
-    axios.post('http://localhost:3500/post/add', formData)
+    axios.post(config.SERVER+'/post/add', formData)
       
   }
     
