@@ -22,7 +22,7 @@ const index = (app)=> {
  
  //Reply
  app.get('/reply/:id',ReplyController.View)
- app.post('/reply/add',ReplyController.Create)
+ app.post('/reply/add',cStore.single('image'),ReplyController.Create)
  app.post('/reply/reaction',ReplyController.Reaction)
  app.post('/reply/reaction/unlike',ReplyController.Unlike)
  

@@ -7,26 +7,24 @@ const dotenv = require('dotenv').config()
 global._root= __dirname;
 global._base= __dirname+'/backend';
 const route = require('./backend/route/index')
-const { Server } = require("socket.io")
-const cors = require('cors');
 
 //http server...  these will help socket
-const Http = require("http")
-const serve = Http.createServer(app)
-//https server
-const Https = require("https")
-const serveHttps = Https.createServer(app)
+const Http = require("http").createServer(app)
 
-//When http(serve) isnt available, use https (serveHttps)
-const io = new Server(serve || serveHttps,{
+//const io = require("socket.io")(Http)
+global.io = require("socket.io")(Http,{
   cors:{
     origin:process.env.FRONTEND_URL,
     methods:["GET","POST"]
   }
-})
+});
 
-//helps socket request
-app.use(cors())
+
+io.on('connection', (soc) => {
+  
+});
+
+
 
 // Used to parse JSON bodies
 app.use(express.json());
@@ -38,7 +36,7 @@ var dir = path.join(__dirname, 'backend/files');
 app.use(express.static(dir));
 
 //App listener using the httpServer created with express's app instance
-app.listen(port,(req,res)=>{
+Http.listen(port,(req,res)=>{
   console.log("App running on port: "+process.env.PORT)
 })
 

@@ -31,8 +31,11 @@ const comment = require('../model/comment')
     //push new reply id to comments.reply for population
     _comment.replies.push(created._id)
     _comment.save()
-    
+    io.emit("reply-added","New reply")
     res.send({status:200})
+   }
+   else{
+     return res.status(500)
    }
   }
   

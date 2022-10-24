@@ -33,7 +33,10 @@ export default function App(){
          Authorization:'JWT '+'hhfggffyghy'
       }
     }).then(r=>{
-      localStorage.setItem(r.data.accessToken)
+      localStorage.setItem('token',r.data.accessToken)
+      localStorage.setItem('admin',r.data.isAdmin)
+      localStorage.setItem('user',JSON.stringify(r.data.user))
+      nav('/')
     }).catch(e=>{
        alert(JSON.stringify(e))
     })

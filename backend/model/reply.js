@@ -19,7 +19,6 @@ const replySchema = new Schema({
         ref:'user'
       },
       reaction:{ type : Array  },
-      
 })
 
 const reply = mongoose.model('reply', replySchema)

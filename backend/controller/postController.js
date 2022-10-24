@@ -3,7 +3,7 @@ const dotenv = require('dotenv').config()
 //Model for posts
 const post = require('../model/post')
  //require('../../model/comment')
-
+//const io = require('../config/socket-io')
 //Upload
 //without this multer store upload, req.body will be empty
 

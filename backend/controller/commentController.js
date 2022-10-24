@@ -7,14 +7,13 @@ const post = require('../model/post')
 
 
 const View = async (req,res)=>{
-   const _comment = await comment.find({post:req.params.id}).sort({'createdAt':-1}).populate("post")
+   const _comment = await comment.find({post:req.params.id}).sort({'createdAt':-1}).populate("post").populate({path:'replies'})
     res.send({data:_comment})
-    
   }
 
  //Add comment
   const Create = async (req,res)=>{
-   
+  
    let form = {
        name:req.body.name,
        content:req.body.content,
@@ -32,9 +31,9 @@ const View = async (req,res)=>{
     _post.comments.push(created._id)
     _post.save()
     
-    io.emit('commentAdded','New comment on '+_post.title)
-     //console.log(_post)
-     res.send({status:200})
+    io.emit('comment-added','New comment on '+_post.title)
+    //console.log(_post)
+    return res.status(200)
    } 
   }
   
@@ -50,15 +49,16 @@ const View = async (req,res)=>{
      // check if user clicked this same reaction b4
      //if so, do nothing and return success
      if(_comment.reaction.some(reac=>reac.username==reaction.username)){
-       res.send({status:401})
+       return res.status(401)
        console.log(reaction)
      }
      else{
      //else push reaction
      _comment.reaction.push(reaction)
      _comment.save()
+     //Will add this feature back
      io.emit("reaction","Comment liked")
-     res.send({status:200})
+     return res.status(200)
      }
   }
   
@@ -73,14 +73,14 @@ const View = async (req,res)=>{
      // check if user clicked this same reaction b4
      //if so, do nothing and return success
        if(!_comment.reaction.some(reac=>reac.username==reaction.username)){
-       res.send({status:401})
+       return res.status(401)
      }
      else{
      //else push reaction
      _comment.reaction.pull(reaction)
      _comment.save()
      io.emit("reaction","Comment unliked")
-     res.send({status:200})
+     return res.status(200)
      }
   }
 
