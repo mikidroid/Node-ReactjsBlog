@@ -58,8 +58,8 @@ export default function App({comments,postId,customClass}){
      //Notification.requestPermission()
      //const not = new Notification("New comment")
      let formData = new FormData();
-     formData.append('name',user?.username||name)
-     formData.append('email',user?.email||email)
+     formData.append('name',user?user.username:name)
+     formData.append('email',user?user.email:email)
      formData.append('postId',postId)
      formData.append('content',content)
     
@@ -71,7 +71,7 @@ export default function App({comments,postId,customClass}){
  const like =(type,commentId)=>{
    if(!auth) {return alert("You need to login first!")}
    let data = {
-       username:user?.username || 'anonymous',
+       username:user?user.username:'anonymous',
        type:type,
        commentId:commentId}
        
@@ -83,7 +83,7 @@ export default function App({comments,postId,customClass}){
  const unLike =(type,commentId)=>{
    if(!auth) {return alert("You need to login first!")}
     let data = {
-       username:user?.username || 'anonymous',
+       username:user?user.username:'anonymous',
        type:type,
        commentId:commentId}
        
@@ -110,7 +110,7 @@ export default function App({comments,postId,customClass}){
   
    <input type="email" placeholder="Email" onChange={(e)=>setEmail(e.target.value)} class="mt-3 ring-1 ring-blue-200 rounded-md py-2 px-4 focus:ring-blue-200 w-full" /></>
   }
-  <textarea class="mt-3 ring-1 ring-blue-200 rounded-md py-2 px-4 focus:ring-blue-200 w-full" type="text" placeholder="Start typing comment here..." onChange={(e)=>setContent(e.target.value)} />
+  <textarea id="comment" class="mt-3 ring-1 ring-blue-200 rounded-md py-2 px-4 focus:ring-blue-200 w-full" type="text" placeholder="Start typing comment here..." onChange={(e)=>setContent(e.target.value)} />
   
   <button class="w-full bg-blue-400 text-sm text-white py-2 px-3 rounded-xl mt-3 md:mt-5" onClick={addComment}>
   Add comment

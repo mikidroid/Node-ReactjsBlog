@@ -10,7 +10,7 @@ const post = require('../model/post')
 
  //All routes
   const Index = async(req,res)=>{
-   const _post = await post.find().sort({'createdAt':1})
+   const _post = await post.find().populate({path:'comments',populate:{path:'replies'}}).sort({'createdAt':1})
     res.send({data:_post})
   }
 

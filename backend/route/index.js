@@ -3,6 +3,7 @@ const PostController = require('../controller/postController')
 const ReplyController = require('../controller/replyController')
 const CommentController = require('../controller/commentController')
 const AuthController = require('../controller/authController')
+const CategoryController = require('../controller/categoryController')
 //without this multer store, req.body will be empty
 const store = require(_root+'/backend/config/file-upload')
 //comment store
@@ -35,6 +36,11 @@ const index = (app)=> {
  //Auth
  app.post('/login',cStore.single('image'),AuthController.Login)
  app.post('/register',cStore.single('image'),AuthController.Register)
+ 
+  //Category
+ app.post('/category/add',CategoryController.Create)
+ app.get('/category',CategoryController.Index)
+ app.post('/category/delete/:id',CategoryController.Remove)
 }
 
 module.exports = index

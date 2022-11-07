@@ -31,7 +31,7 @@ export default function App(props){
  const like =(type,replyId)=>{
    if(!auth) {return alert("You need to login first!")}
    let data = {
-       username:user?.username || 'anonymous',
+       username:user?user.username:'anonymous',
        type:type,
        replyId:replyId}
        
@@ -43,7 +43,7 @@ export default function App(props){
  const unLike =(type,replyId)=>{
    if(!auth) {return alert("You need to login first!")}
    let data = {
-       username:user?.username || 'anonymous',
+       username:user?user.username:'anonymous',
        type:type,
        replyId:replyId}
        

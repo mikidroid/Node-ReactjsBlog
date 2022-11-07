@@ -18,6 +18,7 @@ export default function App(){
  const [auth,setAuth]=React.useState(localStorage.getItem('token')?true:false)
  const [user,setUser]=React.useState(auth?JSON.parse(localStorage.getItem('user')):null)
  const location = RR.useLocation()
+ const nav = RR.useNavigate()
  const [data,setData]=React.useState({})
  const [content,setContent]=React.useState('')
  const [RatingValue,setRatingValue]=React.useState(0)
@@ -142,7 +143,9 @@ export default function App(){
     <div onClick={sharePost} class="ml-2 ring-1 ring-blue-900/50 flex text-sm rounded-full text-blue-900/90 bg-blue-100/50 px-3 py-2">
     <I.ArrowsRightLeftIcon class="w-4 mr-1"/> Share
     </div>
-    <div class="ml-2 flex ring-1 ring-blue-900/50 text-sm rounded-full text-blue-900/90 bg-blue-100/50 px-3 py-2">
+    <div onClick={()=>{
+      nav(location.pathname+'/#comment')
+    }} class="ml-2 flex ring-1 ring-blue-900/50 text-sm rounded-full text-blue-900/90 bg-blue-100/50 px-3 py-2">
     <I.ChatBubbleLeftEllipsisIcon class="w-4 mr-1" />
       Comment
     </div>
