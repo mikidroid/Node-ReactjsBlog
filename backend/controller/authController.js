@@ -14,15 +14,14 @@ const User = require('../model/user')
     const user = await User.findOne({email:r.email})
     .exec((err,user)=>{
       if(!user){
-        res.status(401)
-        res.send({data:"No User!"})
+        return res.status(401).send({data:"No User!"})
       }
       //Compare passwords with bcrypt
       let comparePassword = bcrypt.compareSync(r.password,user.password)
       if(!comparePassword){
         return res.status(401).send("Incorrect password!")}
       //Create JWT token
-      let token = JWT.sign({id:user.id},process.env.JWT_SECRET,{expiresIn:"2H"})
+      let token = JWT.sign({id:user.id},process.env.JWT_SECRET,{expiresIn:"5D"})
       return res.status(200).send({
             user:user,
             accessToken:token,

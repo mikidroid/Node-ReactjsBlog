@@ -16,9 +16,9 @@ const calRating = require('../modules/cal-rating')
 
 export default function App () {
  
- const auth=false
  const [loading,setLoading] = React.useState(true);
  const [data,setData]=React.useState([])
+ const nav = RR.useNavigate()
 
  //UseEffect
  React.useEffect(()=>{
@@ -33,11 +33,30 @@ export default function App () {
 
  // Fetch data
  const fetchData =()=>{
-   fetch(config.SERVER+'/post').then(r=>r.json()).then(r=>{
-     let val = r.data.splice(0,5)
+    axios(config.SERVER+'/post',{
+     headers:{
+       authorization:`JWT ${localStorage.getItem('token')}`}
+   })
+   .then(r=>{
+     let val = r.data.posts.splice(0,5)
      setData(val)
      setLoading(false)
+   }).catch(e=>{
+     if(e.response.status===511){
+       //logout because of expired frontend token
+       localStorage.removeItem('token')
+       localStorage.removeItem('admin')
+       localStorage.removeItem('user')
+       nav('/login')
+     }
    })
+ }
+ 
+ //logout
+ const logout =()=>{
+    localStorage.removeItem('admin')
+    localStorage.removeItem('token')
+    nav('/login')
  }
  
  
@@ -53,7 +72,7 @@ return(
   <>
   
   <div>
-  
+  <button onClick={()=>logout()} class="mt-4 text-blue-800/80 px-2.5 py-1 bg-blue-500/20 border border-blue-800/40 rounded-lg">Logout</button>
   <div class="md:m-1 mt-4 md:mt-8">
   <BlogListWithThumbnail subtitle="24h Top News" title="Hottest" icon="🔥" amount={5} filter="hottest" data={data}/>
   </div>

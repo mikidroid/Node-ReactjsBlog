@@ -35,7 +35,11 @@ export default function App({category}){
  
  const deleteCategory =(id)=>{
     setLoading(true)
-    axios.post(config.SERVER+'/category/delete/'+id)
+    axios.post(config.SERVER+'/category/delete/'+id,{},{
+      headers:{
+        authorization:`JWT ${localStorage.getItem('token')}`
+      }
+    })
     .then(r=>{
       alert("Category Removed!")
       nav(0)

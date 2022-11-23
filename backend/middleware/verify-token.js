@@ -2,8 +2,10 @@ const jwt = require('jsonwebtoken')
 const User = require(_base+'/model/user')
 
 const verifyToken = (req,res,next)=>{
-  if(req.headers && req.authorization && req.authorization.split(' ')[0] === 'JWT'){
-    jwt.verify(req.authorization.split(' ')[1],process.env.JWT_SECRET,(err,decode)=>{
+      console.log(req.headers.authorization)
+  if(req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'JWT'){
+
+    jwt.verify(req.headers.authorization.split(' ')[1],process.env.JWT_SECRET,(err,decode)=>{
       if(err || !decode){
         /*
         *My custom 511 error(Indicates frontend
@@ -11,6 +13,7 @@ const verifyToken = (req,res,next)=>{
         *localstorage token in frontend and redirect
         *frontend user back to login
         */
+     
         return res.status(511).send({message:'Frontend AccessToken no longer valid!'})
       }
       else{
@@ -22,7 +25,9 @@ const verifyToken = (req,res,next)=>{
     })
   }
   else{
-    return res.status(403).send({message:'Unauthorized Access!'})
+     //console.log(req.headers.authorization)
+     return res.status(403).send({message:'Unauthorized Access!'})
+    
   }
 }
 

@@ -30,9 +30,8 @@ export default function App(){
       url:config.SERVER+'/login',
       headers:{
         'Content-Type':'multipart/form-data',
-         Authorization:'JWT '+'hhfggffyghy'
-      }
-    }).then(r=>{
+      }})
+     .then(r=>{
       localStorage.setItem('token',r.data.accessToken)
       localStorage.setItem('admin',r.data.isAdmin)
       localStorage.setItem('user',JSON.stringify(r.data.user))
